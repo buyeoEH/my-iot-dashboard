@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>나의 IoT 대시보드</title>
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 40px; background:#f4f4f4; }
+    .box { max-width:480px; margin:0 auto; background:#fff; padding:24px; border-radius:10px; }
+    h1 { color:#007bff; text-align:center; }
+    button { padding:12px 24px; margin:8px; border:none; border-radius:6px; font-size:16px; color:#fff; }
+    .on  { background:#28a745; } .off { background:#dc3545; }
+  </style>
+</head>
+<body>
+  <div class="box">
+    <h1>나의 IoT 대시보드</h1>
+    <p>LED 상태: <b id="status">불러오는 중...</b></p>
+    <button class="on"  id="btnOn">LED 켜기</button>
+    <button class="off" id="btnOff">LED 끄기</button>
+  </div>
+  <script>
+    // ↓↓↓ 모듈 2에서 복사해둔 firebaseConfig 값을 여기에 붙여넣으세요 ↓↓↓
+    const firebaseConfig = {
+      apiKey: "YOUR_API_KEY",
+      databaseURL: "https://YOUR_PROJECT_ID-default-rtdb.firebaseio.com",
+      projectId: "YOUR_PROJECT_ID"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
+    const statusEl = document.getElementById("status");
+
+    db.ref("led_status").on("value", (snap) => {
+      statusEl.innerText = (snap.val() || "없음").toUpperCase();
+    });
+    document.getElementById("btnOn").onclick  = () => db.ref("led_status").set("on");
+    document.getElementById("btnOff").onclick = () => db.ref("led_status").set("off");
+  </script>
+</body>
+</html>
