@@ -17,15 +17,16 @@
   <div class="box">
     <h1>나의 IoT 대시보드</h1>
     <p>LED 상태: <b id="status">불러오는 중...</b></p>
+    <p>온도: <b id="temp">-</b>℃ / 습도: <b id="hum">-</b>%</p>         <!-- ◀ 새로 추가 -->
+    <p>토양습도: <b id="soil">-</b> / 조도: <b id="light">-</b></p>      <!-- ◀ 새로 추가 -->
     <button class="on"  id="btnOn">LED 켜기</button>
     <button class="off" id="btnOff">LED 끄기</button>
   </div>
   <script>
-    // ↓↓↓ 모듈 2에서 복사해둔 firebaseConfig 값을 여기에 붙여넣으세요 ↓↓↓
     const firebaseConfig = {
-      apiKey: "AIzaSyD1yssvVCiCJGk1zSL57bfHPPTNvzgiIpo",
-      databaseURL: "https://picoproject-54545-default-rtdb.firebaseio.com",
-      projectId: "picoproject-54545"
+      apiKey: "YOUR_API_KEY",
+      databaseURL: "https://YOUR_PROJECT_ID-default-rtdb.firebaseio.com",
+      projectId: "YOUR_PROJECT_ID"
     };
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
@@ -34,6 +35,17 @@
     db.ref("led_status").on("value", (snap) => {
       statusEl.innerText = (snap.val() || "없음").toUpperCase();
     });
+
+    db.ref("sensor_data").on("value", (snap) => {              // ◀ 아래 8줄 새로 추가
+      const s = snap.val();
+      if (s) {
+        document.getElementById("temp").innerText  = s.temperature;
+        document.getElementById("hum").innerText   = s.humidity;
+        document.getElementById("soil").innerText  = s.soilMoisture;
+        document.getElementById("light").innerText = s.light;
+      }
+    });
+
     document.getElementById("btnOn").onclick  = () => db.ref("led_status").set("on");
     document.getElementById("btnOff").onclick = () => db.ref("led_status").set("off");
   </script>
